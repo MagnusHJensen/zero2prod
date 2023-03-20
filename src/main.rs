@@ -13,10 +13,12 @@ async fn main() -> std::io::Result<()> {
 
     let configuration = Settings::new().expect("Failed to read configuration");
     let connection_pool =
-        PgPool::connect(&configuration.database.connection_string().expose_secret())
-            .await
-            .expect("Failed to connect to Postgres.");
-    let listener = TcpListener::bind(format!("127.0.0.1:{}", configuration.application_port))
-        .expect("Unable to bind to port 8000");
+        PgPool::connect_lazy(&configuration.database.connection_string().expose_secret())
+            .expect("Failed to connect to Postgres connection pool.");
+    let listener = TcpListener::bind(format!(
+        "{}:{}",
+        configuration.application.host, configuration.application.port
+    ))
+    .expect("Unable to bind to port 8000");
     run(listener, connection_pool)?.await
 }
