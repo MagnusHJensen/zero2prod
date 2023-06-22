@@ -63,7 +63,11 @@ impl Settings {
             .add_source(
                 File::from(configuration_directory.join(environment.as_str())).required(true),
             )
-            .add_source(config::Environment::with_prefix("app").separator("__"))
+            .add_source(
+                config::Environment::with_prefix("APP")
+                    .prefix_separator("_")
+                    .separator("__"),
+            )
             .build()?;
 
         settings.try_deserialize()
